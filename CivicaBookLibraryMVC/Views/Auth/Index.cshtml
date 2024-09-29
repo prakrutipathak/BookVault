@@ -1,0 +1,310 @@
+﻿@using CivicaBookLibraryMVC.ViewModels
+@model List<UserViewModel>
+
+@{
+    ViewBag.Title = "User";
+    string search = ViewBag.Search;
+    var previousPageNumber = @ViewBag.CurrentPage - 1;
+    var nextPageNumber = @ViewBag.CurrentPage + 1;
+
+}
+<div class="container" style="background-color: white;">
+    <h1 class="text-center">Users</h1>
+    <form method="get" class="mb-3">
+        <div class="input-group">
+            <input type="text" id="searchInput" name="search" class="form-control" placeholder="Search by Name or Login id..." value="@search" style="border-color:#7B57CB;">
+            <input type="hidden" name="pageSize" value="@ViewBag.PageSize" />
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+            @if (!string.IsNullOrEmpty(search))
+            {
+                <div class="input-group-append">
+                    <a href="/Auth/Index?letter=@ViewBag.Letter&pageSize=@ViewBag.PageSize" class="btn btn-secondary">Clear</a>
+                </div>
+            }
+        </div>
+        <div>
+            @if (!string.IsNullOrEmpty(ViewBag.Search) && ViewBag.Search.Length <= 2)
+            {
+                <small class="text-secondary">Search query must be at least 2 characters</small>
+            }
+        </div>
+    </form>
+
+    <div class="table-responsive">
+
+        <table class="table table-striped users-table"
+               style="font-size: smaller; text-align: center; border-color: black; border-top: black;">
+            <thead>
+                <tr>
+                    <th>Sr. No</th>
+                    <th>
+                        <div style="display:flex; align-items: center">
+                            Name
+                            <div style="display: flex; flex-direction: column; margin-left: 5px;" onclick="changePage('@ViewBag.Search','@ViewBag.CurrentPage', '@ViewBag.PageSize', '!@ViewBag.SortOrder')">
+                                @if (ViewBag.SortOrder == "asc")
+                                {
+                                    <i class="fas fa-sort-alpha-asc" style="cursor: pointer"></i>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-sort-alpha-desc"></i>
+                                }
+                            </div>
+
+                        </div>
+                    </th>
+                    <th>Login Id</th>
+                    <th>Date of Birth</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@(Model.ToList().IndexOf(item) + 1 + (ViewBag.PageSize * (ViewBag.CurrentPage - 1)))</td>
+                            <td>@item.Name</td>
+                            <td>@item.LoginId</td>
+                            <td>@item.DateOfBirth</td>
+                            <td>@item.Age yrs</td>
+                            @if (@item.Gender == "F")
+                            {
+                                <td>Female</td>
+                            }
+                            @if (@item.Gender == "M")
+                            {
+                                <td>Male</td>
+                            }
+
+                            <td>@item.Email</td>
+                            <td>@item.PhoneNumber</td>
+                            <td>
+                                <button class="btn btn-outline-danger m-1"
+                                        onclick="deleteBook('@item.UserId')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr style="background: darkgrey;">
+                        <td colspan="9" class="text-center justify-content-center">No Users Found</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@if (Model.Count > 0)
+{
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <!-- Page size dropdown -->
+        <div>
+            <label for="pageSize">Page Size:</label>
+            <select id="pageSize" onchange="changePageSize(this)" class="form-control form-control-sm">
+                <option value="2">2</option>
+                <option value="4">4</option>
+                <option value="6">6</option>
+                <!-- Add more options as needed -->
+            </select>
+        </div>
+        <!-- Pagination -->
+        <ul class="pagination">
+         
+                <li class="page-item @( @ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="/Auth/Index?search=@search&page=@previousPageNumber&pageSize=@ViewBag.PageSize&sortOrder=@ViewBag.SortOrder"><i class="fa fa-chevron-left"></i></a>
+                </li>
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="/Auth/Index?search=@search&page=@i&pageSize=@ViewBag.PageSize&sortOrder=@ViewBag.SortOrder">@i</a>
+                </li>
+            }
+            <li class="page-item @( @ViewBag.CurrentPage == @ViewBag.TotalPages ? "disabled" : "")">
+                <a class="page-link" href="/Auth/Index?search=@search&page=@nextPageNumber&pageSize=@ViewBag.PageSize&sortOrder=@ViewBag.SortOrder"><i class="fa fa-chevron-right"></i></a>
+            </li>
+        </ul>
+    </div>
+}
+
+
+<script>
+    // Initialize page size dropdown with current selected size
+    document.addEventListener("DOMContentLoaded", function () {
+        var currentPageSize = @(ViewBag.PageSize);
+        var pageSizeDropdown = document.getElementById("pageSize");
+        for (var i = 0; i < pageSizeDropdown.options.length; i++) {
+            if (pageSizeDropdown.options[i].value === currentPageSize.toString()) {
+                pageSizeDropdown.selectedIndex = i;
+                break;
+            }
+        }
+    });
+
+    // Function to handle page size change
+    function changePageSize(select) {
+        var pageSize = select.value;
+        var currentPage = 1;
+        var sortOrder = "@ViewBag.SortOrder";
+        var search = "@search";
+        window.location.href = "/Auth/Index?search=" + search + "&page=" + currentPage + "&pageSize=" + pageSize + "&sortOrder=" + sortOrder;
+    }
+
+    function deleteBook(userId) {
+        if (confirm("Are you sure you want to delete this User?")) {
+            $.ajax({
+                url: '@Url.Action("Delete", "Auth")',
+                type: 'POST',
+                data: { id: userId },
+                success: function (result) {
+                    window.location.reload();
+                },
+                error: function (xhr, status, error) {
+                    alert("An error occurred while deleting the User.");
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+    }
+    function changePage(search = null, page, pageSize, sortDir) {
+        if (sortDir == '!asc') {
+            sortDir = 'desc';
+        }
+        if (sortDir == '!desc') {
+            sortDir = 'asc';
+        }
+
+        window.location.href = "/Auth/Index" +
+            "?search=@ViewBag.Search" +
+            "&page=" + @ViewBag.CurrentPage +
+            "&pageSize=" + @ViewBag.PageSize +
+            "&sortOrder=" + sortDir;
+    }
+
+</script>
+<style>
+    .arrowup,
+    .arrowdown {
+        cursor: pointer;
+    }
+
+    .container {
+        font-family: sans-serif;
+        margin-top: 2%;
+    }
+
+    .btn-outline-info {
+        color: blue;
+        border-color: blue;
+    }
+    th {
+        background-color: #e4f7f6;
+    }
+
+    .btn-outline-danger {
+        color: #dc3545;
+        border-color: #dc3545;
+    }
+
+        .btn-outline-danger:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+
+   
+
+
+    .custom-select {
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 8px 12px;
+        font-size: 14px;
+        margin-bottom: 3px;
+        cursor: pointer;
+    }
+
+    arrowup,
+    .arrowdown {
+        display: inline-block;
+        vertical-align: bottom;
+        cursor: pointer;
+    }
+
+    .arrowup {
+        margin-bottom: -1px;
+        cursor: pointer;
+    }
+
+    .arrowdown {
+        margin-left: 0px;
+        margin-top: 0px;
+        cursor: pointer;
+    }
+
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px; /* Add margin top for spacing */
+        margin-bottom: 20px; /* Add margin bottom for spacing */
+    }
+
+        .pagination li {
+            list-style-type: none; /* Remove default list styling */
+        }
+
+        .pagination .page-link {
+            color: #7b57cb; /* Default link color */
+            background-color: transparent;
+            border: 1px solid #dee2e6; /* Add border */
+            cursor: pointer;
+            transition: color 0.3s, background-color 0.3s, border-color 0.3s; /* Smooth transition */
+            padding: 0.5rem 0.75rem; /* Padding for the link */
+            border-radius: 0.25rem; /* Rounded corners */
+        }
+
+            .pagination .page-link:hover {
+                color: white; /* Darker blue color on hover */
+                text-decoration: none; /* Remove underline on hover */
+                border-color: #adb5bd; /* Adjust border color on hover */
+            }
+
+        .pagination .page-item.disabled .page-link {
+            color: #a5a2a2; /* Faded text color for disabled buttons */
+            pointer-events: none; /* Disable pointer events for disabled buttons */
+            background-color: #e9ecef;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #17a2b8; /* Active page background color */
+            color: #fff; /* Active page text color */
+            border-color: #17a2b8; /* Active page border color */
+            cursor: pointer;
+        }
+
+        .page-link:hover{
+        background-color: #D62598;
+        }
+
+    .page-size-selection {
+        display: flex;
+        align-items: center;
+        margin-top: 10px; /* Adjust margin top */
+    }
+
+        .page-size-selection select {
+            margin-left: 10px; /* Add some spacing between the label and the select */
+        }
+</style>

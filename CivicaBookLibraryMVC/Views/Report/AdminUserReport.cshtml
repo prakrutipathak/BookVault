@@ -1,0 +1,215 @@
+﻿@using CivicaBookLibraryMVC.ViewModels
+@model List<AdminReportUserViewModel>
+
+
+
+@{
+    int count = (ViewBag.CurrentPage - 1) * ViewBag.PageSize + 1;
+    int currentPage = ViewBag.CurrentPage;
+    var previousPageNumber = @ViewBag.CurrentPage - 1;
+    var nextPageNumber = @ViewBag.CurrentPage + 1;
+    int totalPages = ViewBag.TotalPages;
+    int pageSize = ViewBag.PageSize;
+    string type = ViewBag.Type;
+    int? bookId = ViewBag.BookId;
+
+    var issueDate = ViewBag.IssueDate as DateTime?;
+    var users = ViewBag.Users;
+    var books = ViewBag.Books;
+
+
+    ViewData["CurrentPage"] = currentPage;
+    ViewData["TotalPages"] = totalPages;
+    ViewData["PageSize"] = pageSize;
+    ViewData["BookId"] = bookId;
+    ViewData["IssueDate"] = issueDate;
+    ViewData["Type"] = type;
+    ViewData["Users"] = users;
+    ViewData["Books"] = books;
+}
+
+<partial name="_AdminReportPartialView" />
+
+<div class="table-responsive mt-3">
+    <table class="table table-striped books-table" style="font-size: smaller; text-align: center; border-color: black; border-top: black;">
+    <thead>
+        <tr>
+            <th>Sr No.</th>
+            <th>Name</th>
+            @* <th>Issue Date</th> *@
+            @if (type == "issue")
+            {
+
+                <th>Issued Date</th>
+            }
+            @if (type == "return")
+            {
+
+                <th>Return Date</th>
+            }
+
+          
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Count == 0)
+        {
+            <tr>
+                <td colspan="4">No Users Found!!!</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var report in Model)
+            {
+                <tr>
+                    <td>@count</td>
+                    <td>@report.User.Name</td>
+                    @if (type == "issue")
+                    {
+                        <td>@report.IssueDate.ToShortDateString()</td>
+
+                    }
+                    @if (type == "return")
+                    {
+
+                        <td>@report.ReturnDate.Value.ToString("MM-dd-yyyy")</td>
+
+                    }
+                </tr>
+                count++;
+            }
+        }
+    </tbody>
+</table>
+
+</div>
+
+
+
+
+
+@if (Model.Count > 0)
+{
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <!-- Page size dropdown -->
+        <div>
+            <label for="pageSize">Page Size:</label>
+            <div>
+                <select id="pageSize" onchange="changePageSize(this)" class="form-control">
+                    <option value="2">2</option>
+                    <option value="4">4</option>
+                    <option value="6">6</option>
+                    <!-- Add more options as needed -->
+                </select>
+            </div>
+        </div>
+        <!-- Pagination -->
+        <ul class="pagination">
+
+            <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="/Report/AdminUserReport?bookId=@bookId&type=@type&page=@previousPageNumber&pageSize=@ViewBag.PageSize"><i class="fa fa-chevron-left"></i></a>
+
+            </li>
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="/Report/AdminUserReport?bookId=@bookId&type=@type&page=@i&pageSize=@ViewBag.PageSize">@i</a>
+                    
+                </li>
+            }
+            <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                <a class="page-link" href="/Report/AdminUserReport?bookId=@bookId&type=@type&page=@nextPageNumber&pageSize=@ViewBag.PageSize"><i class="fa fa-chevron-right"></i></a>
+
+            </li>
+        </ul>
+    </div>
+}
+
+
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Your custom scripts -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var currentPageSize = @(ViewBag.PageSize);
+        var pageSizeDropdown = document.getElementById("pageSize");
+        if (pageSizeDropdown) {
+            for (var i = 0; i < pageSizeDropdown.options.length; i++) {
+                if (pageSizeDropdown.options[i].value === currentPageSize.toString()) {
+                    pageSizeDropdown.selectedIndex = i;
+                    break;
+                }
+            }
+        }
+
+    });
+
+    // Function to handle page size change
+    function changePageSize(select) {
+        var pageSize = select.value;
+        var currentPage = "@ViewBag.CurrentPage";
+        var type = "@ViewBag.Type";
+        var bookId = "@ViewBag.BookId";
+
+
+
+        window.location.href = "/Report/AdminUserReport?bookId=" +bookId + "&type=" + type + "&page=" + currentPage + "&pageSize=" + pageSize;
+        
+
+    }
+
+
+
+</script>
+
+
+<style>
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px; /* Add margin top for spacing */
+        margin-bottom: 20px; /* Add margin bottom for spacing */
+    }
+
+        .pagination li {
+            list-style-type: none; /* Remove default list styling */
+        }
+
+        .pagination .page-link {
+            color: #7b57cb; /* Default link color */
+            background-color: transparent;
+            border: 1px solid #dee2e6; /* Add border */
+            cursor: pointer;
+            transition: color 0.3s, background-color 0.3s, border-color 0.3s; /* Smooth transition */
+            padding: 0.5rem 0.75rem; /* Padding for the link */
+            border-radius: 0.25rem; /* Rounded corners */
+        }
+
+            .pagination .page-link:hover {
+                color: white; /* Darker blue color on hover */
+                text-decoration: none; /* Remove underline on hover */
+                border-color: #adb5bd; /* Adjust border color on hover */
+            }
+
+        .pagination .page-item.disabled .page-link {
+            color: #a5a2a2; /* Faded text color for disabled buttons */
+            pointer-events: none; /* Disable pointer events for disabled buttons */
+            background-color: #e9ecef;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #17a2b8; /* Active page background color */
+            color: #fff; /* Active page text color */
+            border-color: #17a2b8; /* Active page border color */
+            cursor: pointer;
+        }
+
+    .page-link:hover {
+        background-color: #D62598;
+    }
+
+</style>

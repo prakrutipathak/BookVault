@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\prakr\\Downloads\\CivicaBookLibrary-master\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{266B2157-B591-485F-8434-50FB7852A1F7}|CivicaBookLibraryApi\\CivicaBookLibraryApi.csproj|c:\\users\\prakr\\downloads\\civicabooklibrary-master\\civicabooklibraryapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{266B2157-B591-485F-8434-50FB7852A1F7}|CivicaBookLibraryApi\\CivicaBookLibraryApi.csproj|solutionrelative:civicabooklibraryapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\prakr\\Downloads\\CivicaBookLibrary-master\\CivicaBookLibraryApi\\appsettings.json",
+              "RelativeDocumentMoniker": "CivicaBookLibraryApi\\appsettings.json",
+              "ToolTip": "C:\\Users\\prakr\\Downloads\\CivicaBookLibrary-master\\CivicaBookLibraryApi\\appsettings.json",
+              "RelativeToolTip": "CivicaBookLibraryApi\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-09-29T12:56:10.991Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

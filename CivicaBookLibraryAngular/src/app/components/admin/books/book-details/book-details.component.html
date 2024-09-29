@@ -1,0 +1,66 @@
+<div class="container">
+    <div class="row justify-content-center mt-4">
+      <div class="col-lg-8">
+        <div class="card custom-card">
+          <h5 class="card-header text-center"><b>{{book.title}}</b></h5>
+            
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <strong>Author:</strong>
+              </div>
+              <div class="col-md-6">
+                {{book.author}}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <strong>Total Quantity:</strong>
+              </div>
+              <div class="col-md-6">
+                {{book.totalQuantity}}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <strong>Available Quantity:</strong>
+              </div>
+              <div class="col-md-6">
+                {{book.availableQuantity}}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <strong>Issued Quantity:</strong>
+              </div>
+              <div class="col-md-6">
+                {{book.issuedQuantity}}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <strong>Price per Book:</strong>
+              </div>
+              <div class="col-md-6">
+                ${{book.pricePerBook}}
+              </div>
+            </div>
+          </div>
+          
+          
+        </div>
+        
+      </div>
+    </div>
+   <br />
+    <div class="text-center">
+      <a *ngIf="isAuthenticated" class="btn btn-outline-info m-1" [routerLink]="['/modifyBook', book.bookId]" routerLinkActive="router-link-active">
+        <i class="fas fa-edit"></i> <b>Edit</b>
+      </a>
+      <button *ngIf="isAuthenticated" class="btn btn-outline-danger m-1" (click)="deleteBook(book.bookId)">
+        <i class="fas fa-trash-alt"></i> <b>Delete</b>
+      </button>
+      <a class="btn btn-outline-secondary m-1" [routerLink]="['/bookList']" routerLinkActive="router-link-active"><b>Back to List</b></a>
+    </div>
+  </div>
+  

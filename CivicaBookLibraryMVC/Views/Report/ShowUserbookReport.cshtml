@@ -1,0 +1,348 @@
+﻿@using CivicaBookLibraryMVC.ViewModels
+@model List<UserBookReportViewModel>
+
+@{
+    int count = (ViewBag.CurrentPage - 1) * ViewBag.PageSize + 1;
+    int currentPage = ViewBag.CurrentPage;
+    var previousPageNumber = @ViewBag.CurrentPage - 1;
+    var nextPageNumber = @ViewBag.CurrentPage + 1;
+    int totalPages = ViewBag.TotalPages;
+    int pageSize = ViewBag.PageSize;
+    string type = ViewBag.Type;
+    int userId = ViewBag.UserId;
+
+    var selectedDate = ViewBag.IssueDate as DateTime?;
+
+
+
+
+}
+
+
+
+<div class="container" style="background-color: white;">
+    <h3 class="text-center">Issued books</h3>
+    <div class="row">
+        <div class="col-lg-6 mt-3">
+            <div class="form-outline" style="width: 100%;">
+                <label class="control-label"><b>Select date:</b></label>
+
+                <input type="date" class="form-control" id="selectedDate" name="selectedDate" value="@selectedDate?.ToString("yyyy-MM-dd")" max="@DateTime.Now.ToString("yyyy-MM-dd")" onchange="selectDate()" style="border-color:#7B57CB;" />
+            </div>
+        </div>
+
+        <div class="col-lg-6 mt-3">
+            <div class="form-outline" style="width: 100%;">
+                <label class="control-label"><b>Books:</b></label>
+         
+                <select id="type" name="type" class="form-control" style="border-color:#7B57CB;">
+                    <option value="" >----- Select status -----</option>
+                    <option value="issue" selected='@(type == "issue")'>Show issued books</option>
+                    <option value="return" selected='@(type == "return")'>Show returned books</option>
+                </select>
+
+ 
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive mt-3" >
+        <table class="table table-striped books-table" style="font-size: smaller; text-align: center; border-color: black; border-top: black;">
+            <thead>
+                <tr>
+                    <th>Sr No.</th>
+                    <th>Book Title</th>
+                    <th>Book Author</th>
+                    @if (type == "issue")
+                    {
+
+                        <th>Issued Date</th>
+                    }
+                    @if (type == "return")
+                    {
+
+                        <th>Return Date</th>
+                    }
+
+                    <th>Book Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Count == 0)
+                {
+                    <tr>
+                        <td colspan="5">No record found.</td>
+                    </tr>
+                }
+                else
+                {
+
+                    @foreach (var book in Model)
+                    {
+
+                        <tr>
+                            <td>@count</td>
+                            <td>@book.Title</td>
+                            <td>@book.Author</td>
+
+                            @if (type == "issue")
+                            {
+
+                                <td>@book.IssueDate.ToShortDateString()</td>
+                            }
+                            @if (type == "return")
+                            {
+
+                                <td>@book.ReturnDate.Value.ToShortDateString()</td>
+                            }
+
+                            @if (book.ReturnDate != null)
+                            {
+
+                                <td>Returned</td>
+                            }
+                            @if (book.ReturnDate == null)
+                            {
+                                <td>
+                                    <form method="post" action="@Url.Action("ReturnBook", "Book")" style="vertical-align: middle;">
+                                        <input type="hidden" name="id" value="@book.IssueId" />
+                                        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to return book?')">Return</button>
+                                    </form>
+                                </td>
+
+                            }
+
+
+
+                        </tr>
+
+                        count++;
+                    }
+                }
+
+            </tbody>
+        </table>
+
+    </div>
+
+
+
+
+    @if (Model.Count > 0 && type == "return")
+    {
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <!-- Page size dropdown -->
+            <div>
+                <label for="pageSize"><b>Page Size:</b></label>
+                <div>
+                    <select id="pageSize" onchange="changePageSize(this)" class="form-control">
+                        <option value="2">2</option>
+                        <option value="4">4</option>
+                        <option value="6">6</option>
+                        <!-- Add more options as needed -->
+                    </select>
+                </div>
+            </div>
+            <!-- Pagination -->
+            <ul class="pagination">
+
+                <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" href="/Report/ShowUserbookReport?userId=@userId@(selectedDate != null ? "&selectedDate=" + selectedDate.Value.ToString("yyyy-MM-dd") : "")&type=@type&page=@previousPageNumber&pageSize=@pageSize"><i class="fa fa-chevron-left"></i></a>
+
+                </li>
+              
+                @if (ViewBag.TotalPages <= 3)
+                {
+                    // Display all pages if total pages are 3 or less
+                    for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link btn-secondary" href="/Report/ShowUserbookReport?userId=@userId@(selectedDate != null ? "&selectedDate=" + selectedDate.Value.ToString("yyyy-MM-dd") : "")&type=@type&page=@i&pageSize=@pageSize">@i</a>
+                        </li>
+                    }
+                }
+                else
+                {
+                    // range of pages to display
+                    int startPage = Math.Max(1, ViewBag.CurrentPage - 1);
+                    int endPage = Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 1);
+
+                    if (ViewBag.CurrentPage <= 2)
+                    {
+                        startPage = 1;
+                        endPage = 3;
+                    }
+                    else if (ViewBag.CurrentPage >= ViewBag.TotalPages - 1)
+                    {
+                        startPage = ViewBag.TotalPages - 2;
+                        endPage = ViewBag.TotalPages;
+                    }
+
+                    for (int i = startPage; i <= endPage; i++)
+                    {
+                        <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link" href="/Report/ShowUserbookReport?userId=@userId@(selectedDate != null ? "&selectedDate=" + selectedDate.Value.ToString("yyyy-MM-dd") : "")&type=@type&page=@i&pageSize=@pageSize">@i</a>
+                        </li>
+                    }
+                }
+
+                <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                    <a class="page-link" href="/Report/ShowUserbookReport?userId=@userId@(selectedDate != null ? "&selectedDate=" + selectedDate.Value.ToString("yyyy-MM-dd") : "")&type=@type&page=@nextPageNumber&pageSize=@pageSize"><i class="fa fa-chevron-right"></i></a>
+                </li>
+                
+            </ul>
+        </div>
+    }
+
+
+    <div class="fluid-container actions-container">
+        <a class="btn btn-secondary m-3" asp-action="BookIssue" asp-controller="Book" style="background-color: #009ca6; border-color: #009ca6;"><i class="fa fa-plus"> </i>Issue new book</a>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var currentPageSize = @(ViewBag.PageSize);
+        var pageSizeDropdown = document.getElementById("pageSize");
+        for (var i = 0; i < pageSizeDropdown.options.length; i++) {
+            if (pageSizeDropdown.options[i].value === currentPageSize.toString()) {
+                pageSizeDropdown.selectedIndex = i;
+                break;
+            }
+        }
+    });
+
+    // Function to handle page size change
+    function changePageSize(select) {
+        var pageSize = select.value;
+        var currentPage = "@ViewBag.CurrentPage";
+        var userId = "@ViewBag.UserId";
+        @* var selectedDate = "@ViewBag.IssueDate"; *@
+          var selectedDate = document.getElementById('selectedDate').value;
+
+        var type = "@ViewBag.Type"
+
+
+
+        if (selectedDate != "") {
+            window.location.href = "/Report/ShowUserbookReport?userId=" + userId + "&selectedDate=" + selectedDate + "&type=" + type + "&page=" + currentPage + "&pageSize=" + pageSize;
+        }
+        else {
+            window.location.href = "/Report/ShowUserbookReport?userId=" + userId + "&type=" + type + "&page=" + currentPage + "&pageSize=" + pageSize;
+        }
+
+    }
+
+
+    function selectDate() {
+
+        var selectedDate = document.getElementById('selectedDate').value;
+        console.log("Date" + selectedDate);
+        window.location.href = "/Report/ShowUserbookReport?userId=" + @userId + "&selectedDate=" + selectedDate + "&type=@ViewBag.Type" + "&page=" + @currentPage + "&pageSize=" + @pageSize;
+    }
+
+
+
+    $(document).ready(function () {
+
+
+        $('#type').change(function () {
+            var type = $(this).val();
+            @* var selectedDate = "@selectedDate"; *@
+              var selectedDate = document.getElementById('selectedDate').value;
+
+            var currentPage = @currentPage;
+
+
+            if(type == "issue"){
+                 currentPage = 1;
+            }
+
+            if (type == "") {
+                window.location.href = "/Report/ShowUserbookReport?userId=" + @userId + "&page=" + currentPage + "&pageSize=" + @pageSize;
+            } else {
+
+
+                if (selectedDate != "") {
+                    window.location.href = "/Report/ShowUserbookReport?userId=" + @userId + "&selectedDate=" + selectedDate + "&type=" + type + "&page=" + @currentPage + "&pageSize=" + @pageSize;
+                }
+                else {
+                    window.location.href = "/Report/ShowUserbookReport?userId=" + @userId + "&type=" + type + "&page=" + currentPage + "&pageSize=" + @pageSize;
+                }
+            }
+
+        });
+  
+       
+
+    });
+
+   
+
+
+
+
+ 
+</script>
+
+
+<style>
+    .btn-outline-danger {
+        margin: 5px;
+        border-radius: 15px;
+        border-color: #D62598;
+        background-color: white;
+        color: #D62598;
+    }
+
+        .btn-outline-danger:hover {
+            background-color: #D62598;
+            color: #fff;
+        }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px; /* Add margin top for spacing */
+        margin-bottom: 20px; /* Add margin bottom for spacing */
+    }
+
+        .pagination li {
+            list-style-type: none; /* Remove default list styling */
+        }
+
+        .pagination .page-link {
+            color: #7b57cb; /* Default link color */
+            background-color: transparent;
+            border: 1px solid #dee2e6; /* Add border */
+            cursor: pointer;
+            transition: color 0.3s, background-color 0.3s, border-color 0.3s; /* Smooth transition */
+            padding: 0.5rem 0.75rem; /* Padding for the link */
+            border-radius: 0.25rem; /* Rounded corners */
+        }
+
+            .pagination .page-link:hover {
+                color: white; /* Darker blue color on hover */
+                text-decoration: none; /* Remove underline on hover */
+                border-color: #adb5bd; /* Adjust border color on hover */
+            }
+
+        .pagination .page-item.disabled .page-link {
+            color: #a5a2a2; /* Faded text color for disabled buttons */
+            pointer-events: none; /* Disable pointer events for disabled buttons */
+            background-color: #e9ecef;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #17a2b8; /* Active page background color */
+            color: #fff; /* Active page text color */
+            border-color: #17a2b8; /* Active page border color */
+            cursor: pointer;
+        }
+
+    .page-link:hover {
+        background-color: #D62598;
+    }
+</style>

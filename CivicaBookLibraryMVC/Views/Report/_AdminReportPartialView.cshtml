@@ -1,0 +1,209 @@
+﻿@using CivicaBookLibraryMVC.ViewModels
+
+@{
+    int count = ((int)ViewData["CurrentPage"] - 1) * (int)ViewData["PageSize"] + 1;
+    int currentPage = (int)ViewData["CurrentPage"];
+    int totalPages = (int)ViewData["TotalPages"];
+    int pageSize = (int)ViewData["PageSize"];
+    int? userId = ViewData["UserId"] as int?;
+    int? bookId = ViewData["BookId"] as int?;
+    var issueDate = ViewData["IssueDate"] as DateTime?;
+    var type = ViewData["Type"] as string;
+
+    bool isBookSelected = bookId.HasValue && bookId.Value > 0;
+
+}
+
+<br />
+
+<h3 class="text-center">Reports</h3>
+
+
+<div class="row">
+    <div class="col-lg-3 mt-3">
+        <div class="form-outline" style="width: 100%;">
+            <label class="control-label"><b>Select date:</b></label>
+            <input type="date" class="form-control" id="issueDate" name="issueDate" value="@issueDate?.ToString("yyyy-MM-dd")" max="@DateTime.Now.ToString("yyyy-MM-dd")" onchange="selectDate()" style="border-color:#7B57CB;" />
+        </div>
+    </div>
+
+    <div class="col-lg-3 mt-3">
+        <div class="form-outline" style="width: 100%;">
+            <label class="control-label"><b>User:</b></label>
+            <select id="userDropdown" class="form-control" style="border-color:#7B57CB;">
+                <option value="">--Select User--</option>
+                @{
+                    var users = ViewData["Users"]  as List<UserViewModel>; 
+
+                    if (users != null)
+                    {
+                        for (int i = 1; i < users.Count; i++)
+                        {
+                            <option value="@users[i].UserId" selected='@(userId == users[i].UserId)'>@users[i].Name</option>
+                        }
+                    }
+                }
+            </select>
+        
+        </div>
+    </div>
+
+    <div class="col-lg-3 mt-3">
+        <div class="form-outline" style="width: 100%;">
+            <label class="control-label"><b>Books:</b></label>
+            <select id="bookDropdown" class="form-control" style="border-color:#7B57CB;">
+                <option value="">--Select Books--</option>
+                @{
+                    var books = ViewData["Books"] as List<BooksViewModel>;
+
+                    if (books != null)
+                    {
+                        for (int i = 0; i < books.Count; i++)
+                        {
+                            <option value="@books[i].BookId" selected='@(bookId == books[i].BookId)'>@books[i].Title - @books[i].Author</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="col-lg-3 mt-3" id="typeDiv" style="display:@(isBookSelected ? "block" : "none")">
+        <div class="form-outline" style="width: 100%;">
+            <label class="control-label"><b>Type:</b></label>
+
+            <select id="type" name="type" class="form-control" style="border-color:#7B57CB;">
+                <option value="">----- Select status -----</option>
+                <option value="issue" selected='@(type == "issue")'>Show issued books</option>
+                <option value="return" selected='@(type == "return")'>Show returned books</option>
+            </select>
+
+
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    
+ 
+
+    function selectDate() {
+        var issueDate = document.getElementById('issueDate').value;
+        window.location.href = "/Report/AdminReport?issuedate=" + issueDate + "&page=" + @currentPage + "&pageSize=" + @pageSize;
+    }
+
+
+    $(document).ready(function () {
+
+        $('#userDropdown').change(function () {
+            var userId = $(this).val();
+            var currentPage = '@ViewBag.CurrentPage';
+            var pageSize = '@ViewBag.PageSize';
+
+            if (userId !== "") {
+                window.location.href = "/Report/AdminReport?userId=" + userId + "&page=" + currentPage + "&pageSize=" + pageSize;
+            }
+            else {
+                window.location.href = "/Report/AdminReport?page=" + currentPage + "&pageSize=" + pageSize;
+
+            }
+        });
+
+
+        $('#bookDropdown').change(function () {
+            var bookId = $(this).val();
+            $('#typeDiv').show();
+            // var type = '@(ViewBag.Type ?? "issue")'; 
+            var type = "issue"; 
+            var currentPage = '@ViewBag.CurrentPage';
+            var pageSize = '@ViewBag.PageSize';
+
+            if (bookId !== "") {
+                window.location.href = "/Report/AdminUserReport?bookId=" + bookId + "&type=" + type + "&page=" + currentPage + "&pageSize=" + pageSize;
+            } else {
+                window.location.href = "/Report/AdminUserReport?type=" + type + "&page=" + currentPage + "&pageSize=" + pageSize;
+
+            }
+
+        });
+
+        $('#type').change(function () {
+            var type = $(this).val();
+            var bookId = '@ViewBag.BookId';
+            var currentPage = '@ViewBag.CurrentPage';
+            var pageSize = '@ViewBag.PageSize';
+
+
+            if (type != "") {
+                window.location.href = "/Report/AdminUserReport?bookId=" + bookId + "&type=" + type + "&page=" + currentPage + "&pageSize=" + pageSize;
+
+            }
+            else{
+                window.location.href = "/Report/AdminUserReport?bookId=" + bookId + "&page=" + currentPage + "&pageSize=" + pageSize;
+
+            }
+            
+
+         
+
+
+        });
+
+    }); 
+
+
+
+
+
+</script>
+
+<style>
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px; /* Add margin top for spacing */
+        margin-bottom: 20px; /* Add margin bottom for spacing */
+    }
+
+        .pagination li {
+            list-style-type: none; /* Remove default list styling */
+        }
+
+        .pagination .page-link {
+            color: #7b57cb; /* Default link color */
+            background-color: transparent;
+            border: 1px solid #dee2e6; /* Add border */
+            cursor: pointer;
+            transition: color 0.3s, background-color 0.3s, border-color 0.3s; /* Smooth transition */
+            padding: 0.5rem 0.75rem; /* Padding for the link */
+            border-radius: 0.25rem; /* Rounded corners */
+        }
+
+            .pagination .page-link:hover {
+                color: white; /* Darker blue color on hover */
+                text-decoration: none; /* Remove underline on hover */
+                border-color: #adb5bd; /* Adjust border color on hover */
+            }
+
+        .pagination .page-item.disabled .page-link {
+            color: #a5a2a2; /* Faded text color for disabled buttons */
+            pointer-events: none; /* Disable pointer events for disabled buttons */
+            background-color: #e9ecef;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #17a2b8; /* Active page background color */
+            color: #fff; /* Active page text color */
+            border-color: #17a2b8; /* Active page border color */
+            cursor: pointer;
+        }
+
+    .page-link:hover {
+        background-color: #D62598;
+    }
+
+</style>

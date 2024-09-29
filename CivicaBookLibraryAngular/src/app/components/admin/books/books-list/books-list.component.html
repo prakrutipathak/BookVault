@@ -1,0 +1,123 @@
+<div class="container" style="background-color: white;">
+    <h1 class="text-center" *ngIf="!loading">Books</h1>
+    <div *ngIf="loading" class="loader-container">
+        <img src="assets/loadergif.gif" alt="Loading..." class="loader-image">
+    </div>
+
+    <br/>
+<div>
+    <div class="input-group">
+        <div class="form-outline" data-mdb-input-init  style="width: 100%;">
+            <input id="search-focus" type="search" id="form" class="form-control" style="border-color: #D62598;" [(ngModel)]="search"
+                (input)="searchBooks()"  placeholder="Search by title or author..." />
+        </div>
+        <div *ngIf="search && search.length <= 2" class="text-secondary">Search query must be at least 2
+            characters
+        </div>
+    </div>
+</div>
+    <br >
+    <div class="table-responsive" *ngIf="!loading">
+
+        <table class="table table-striped books-table" style="font-size: smaller; text-align: center; border-color: black; border-top: black;">
+            <thead>
+                <tr>
+                    <th>Sr. No</th>
+                    <th>
+                        <div (click)="sortColumn('title')" class="sort">
+                            Title
+                                <div *ngIf="sortOrder=='default' || sortBy !== 'title'" class="fa fa-sort arrowup"></div>
+                                <div *ngIf="sortOrder=='asc'&& sortBy=='title'" class="fas fa-sort-alpha-desc arrowup"></div>
+                                <div *ngIf="sortOrder=='desc' && sortBy=='title'" class="fas fa-sort-alpha-asc arrowdown"></div>
+                            </div>
+                    </th>
+                    <th>
+                        <div (click)="sortColumn('author')" class="sort">
+                        Author
+                            <div *ngIf="sortOrder=='default' || sortBy !=='author'" class="fa fa-sort arrowup"></div>
+                            <div *ngIf="sortOrder=='asc'&& sortBy=='author'" class="fas fa-sort-alpha-desc arrowup"></div>
+                            <div *ngIf="sortOrder=='desc' && sortBy=='author'" class="fas fa-sort-alpha-asc arrowdown"></div>
+                        </div>
+                    </th>
+                    <!-- <th>Total Quantity</th>
+                    <th>Available Quantity</th>
+                    <th>Issued Quantity</th> -->
+                    <th>
+                        <div (click)="sortColumn('price')" class="sort">
+                        Price Per Book
+                            <div *ngIf="sortOrder=='default' || sortBy !=='price'" class="fa fa-sort arrowup"></div>
+                            <div *ngIf="sortOrder=='asc' && sortBy=='price'" class="fa fa-sort-numeric-desc arrowup" ></div>
+                            <div *ngIf="sortOrder=='desc' && sortBy=='price'" class="fas fa-sort-numeric-asc arrowdown"></div>
+                        </div>
+                    </th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="books && books.length > 0 && totalBooks != 0; else noBooks">
+
+                <tr *ngFor="let book of books;let i = index" style="vertical-align: middle;">
+                    <td>{{calculateSrNo(i)}}</td>
+                    <td>{{book.title}}</td>
+                    <td>{{book.author}}</td>
+                    <!-- <td>{{book.totalQuantity}}</td>
+                    <td>{{book.availableQuantity}}</td>
+                    <td>{{book.issuedQuantity}}</td> -->
+                    <td>${{book.pricePerBook}}</td>
+                    <td>
+                        <a class="btn btn-outline-secondary m-1" [routerLink]="['/bookDetail',book.bookId]" routerLinkActive="router-link-active">
+                            <i class="fas fa-info"></i> Details
+                        </a>
+                        <a *ngIf="isAuthenticated" class="btn btn-outline-info m-1" [routerLink]="['/modifyBook',book.bookId]" routerLinkActive="router-link-active">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <button *ngIf="isAuthenticated" class="btn btn-outline-danger m-1"
+                            (click)="deleteBook(book.bookId)">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+            <ng-template #noBooks>
+                <tr *ngIf="!loading" style="background: darkgrey;">
+                    <td colspan="8" class="text-center justify-content-center">No Books Found</td>
+                </tr>
+            </ng-template>
+        </table>
+    </div>
+
+    <div *ngIf="!loading">
+    <div class="pagination-container" *ngIf="totalBooks != 0" style="display: flex;flex-direction: row-reverse;justify-content: space-between;" >
+
+
+        <div class="pagination-buttons">
+            <button class="btn btn-outline-dark" (click)="onPrevPage(search)" [disabled]="currentPage === 1">
+                <i class="fa fa-chevron-left"></i>
+            </button>
+    
+            <button class="btn btn-outline-dark custom" *ngFor="let pageNumber of totalPages"
+                (click)="onPageChange(pageNumber, search)" [disabled]="currentPage === pageNumber"
+                [ngClass]="{'btn-secondary': isActive(pageNumber), 'btn-outline-dark': !isActive(pageNumber)}">
+                {{ pageNumber }}
+            </button>
+    
+            <button class="btn btn-outline-dark" (click)="onNextPage(search)" [disabled]="currentPage === totalPages.length">
+                 <i class="fa fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <div class="page-size-selection" *ngIf="!loading">
+            <span>Page Size: </span>
+            <select [(ngModel)]="pageSize" (change)="onPageSizeChange(search)" class="custom-select">
+                <option value="2">2</option>
+                <option value="4">4</option>
+                <option value="6">6</option>
+            </select>
+        </div>
+    </div>
+</div>
+    <br />
+    <div class="fluid-container actions-container" *ngIf="!loading">
+        <a *ngIf="isAuthenticated" class="btn btn-dark" [routerLink]="['/addBook']" style="background-color: #009ca6; border-color: #009ca6;"><i class="fa fa-plus"> </i> Add New Book </a>
+    </div>
+    <br>
+</div>

@@ -1,0 +1,101 @@
+<div class="container" style="background-color: white;">
+    <h1 class="text-center">Users</h1>
+    <div *ngIf="loading" class="loader-container">
+        <img src="assets/loadergif.gif" alt="Loading..." class="loader-image">
+    </div>
+
+    <br>
+    <div class="input-group">
+        <div class="form-outline" data-mdb-input-init style="width: 100%;">
+            <input id="search-focus" type="search" id="form1" class="form-control" style="border-color: #D62598;"
+                [(ngModel)]="search" (input)="searchUsers()" placeholder="Search by name or login id....." />
+        </div>
+        <div *ngIf="search && search.length <= 2" class="text-secondary">Search query must be at least 2
+            characters
+        </div>
+    </div>
+    <br />
+    <div class="table-responsive" *ngIf="!loading">
+
+        <table class="table table-striped users-table"
+            style="font-size: smaller; text-align: center; border-color: black; border-top: black;">
+            <thead>
+                <tr>
+                    <th>Sr. No</th>
+                    <th>
+                        <div>
+                            Name
+                            <div *ngIf="sortOrder=='default'" class="fa fa-sort arrowup" (click)="sortAsc()"></div>
+                            <div *ngIf="sortOrder=='asc'" class="fa fa-sort-alpha-desc arrowup" (click)="sortAsc()">
+                            </div>
+                            <div *ngIf="sortOrder=='desc'" class="fas fa-sort-alpha-asc arrowdown" (click)="sortDesc()">
+                            </div>
+                        </div>
+                    </th>
+                    <th>Login Id</th>
+                    <th>Date of Birth</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="users && users.length > 0 && totalUsers != 0; else nousers">
+
+                <tr *ngFor="let user of users;let i = index">
+                    <td>{{calculateSrNo(i)}}</td>
+                    <td>{{user.salutation}} {{user.name}}</td>
+                    <td>{{user.loginId}}</td>
+                    <td>{{user.dateOfBirth | date}}</td>
+                    <td>{{user.age}}</td>
+                    <td *ngIf="user.gender=='F'">Female</td>
+                    <td *ngIf="user.gender=='M'">Male</td>
+                    <td>{{user.email}}</td>
+                    <td>{{user.phoneNumber}}</td>
+                    <td>
+                        <button *ngIf="isAuthenticated" class="btn btn-outline-danger m-1"
+                            (click)="deleteUser(user.userId)">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+            <ng-template #nousers>
+                <tr *ngIf="!loading" style="background: darkgrey;">
+                    <td colspan="8" class="text-center justify-content-center">No users Found</td>
+                </tr>
+            </ng-template>
+        </table>
+    </div>
+
+    <div class="pagination-container" *ngIf="totalUsers != 0"
+        style="display: flex;flex-direction: row-reverse;justify-content: space-between;">
+
+        <div class="pagination-buttons">
+            <button class="btn btn-outline-dark" (click)="onPrevPage(search)" [disabled]="currentPage === 1">
+                <i class="fa fa-chevron-left"></i>
+            </button>
+
+            <button class="btn btn-outline-dark custom" *ngFor="let pageNumber of totalPages"
+                (click)="onPageChange(pageNumber, search)" [disabled]="currentPage === pageNumber"
+                [ngClass]="{'btn-secondary': isActive(pageNumber), 'btn-outline-dark': !isActive(pageNumber)}">
+                {{ pageNumber}}
+            </button>
+
+            <button class="btn btn-outline-dark" (click)="onNextPage(search)"
+                [disabled]="currentPage === totalPages.length">
+                <i class="fa fa-chevron-right"></i>
+            </button>
+        </div>
+        <div class="page-size-selection">
+            <span>Page Size: </span>
+            <select [(ngModel)]="pageSize" (change)="onPageSizeChange(search)" class="custom-select">
+                <option value="2">2</option>
+                <option value="4">4</option>
+                <option value="6">6</option>
+            </select>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,89 @@
+﻿@using CivicaBookLibraryMVC.ViewModels
+@model BooksViewModel
+
+@{
+    ViewBag.Title = "Modify Book";
+}
+
+<div class="container">
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-8">
+            <div class="card custom-card">
+                <h5 class="card-header text-center"><b>Modify Book</b></h5>
+
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="BookId" />
+                        <div class="mb-3">
+                            <label for="Title" class="form-label"><i class="fas fa-Title me-1"></i><strong>Title:</strong></label>
+                            <input id="Title" asp-for="Title" type="text"  class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                                <label for="Author" class="form-label"><i class="fas fa-Author me-1"></i><strong>Author:</strong></label>
+                                <input id="Author" asp-for="Author" type="text" placeholder="" class="form-control" />
+                                <span asp-validation-for="Author" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="TotalQuantity" class="form-label"><i class="fas fa-TotalQuantity me-1"></i><strong>Total Quantity:</strong></label>
+                            <input id="TotalQuantity" asp-for="TotalQuantity" type="number" min="1" class="form-control" />
+                            <span asp-validation-for="TotalQuantity" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label for="PricePerBook" class="form-label"><i class="fas fa-PricePerBook me-1"></i><strong>Price Per Book:</strong></label>
+                            <input id="PricePerBook" asp-for="PricePerBook" type="number" min="0.01" class="form-control" />
+                            <span asp-validation-for="PricePerBook" class="text-danger"></span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"><b>Save</b></button>
+                                <a class="btn btn-outline-danger" asp-action="Index"><b>Cancel</b></a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+
+    .custom-card {
+        max-width: 500px;
+        margin: auto;
+        margin-top: 5%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        font-family: sans-serif;
+    }
+
+        .custom-card .card-header {
+            background-color: #009ca6;
+            color: white;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border-bottom: none;
+        }
+
+        .custom-card .card-body {
+            padding: 20px;
+        }
+
+        .custom-card form {
+            margin-bottom: 0;
+        }
+
+        .custom-card .btn-primary {
+            width: 100%;
+            background-color: #009ca6;
+            color: white;
+        }
+
+        .custom-card .btn-outline-danger {
+            width: 100%;
+            border-color: #DDDDDD;
+            background-color: #DDDDDD;
+            color: black;
+        }
+</style>

@@ -1,0 +1,40 @@
+<div class="container">
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-8">
+            <div class="accordion" id="accordionExample">
+                <div class="card custom-card">
+                    <div class="card-header">
+                        <h5 class="mb-0 text-center">
+                            <a data-toggle="collapse" data-target="#collapseOne" aria-expanded="true"
+                                aria-controls="collapseOne">
+                                <b>
+                                    <h3 style="color: aliceblue;">FAQ</h3>
+                                </b>
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne"
+                        data-parent="#accordionExample">
+                        <div class="card-body">
+                            <div class="accordion-item" *ngFor="let faq of faqs; let i = index">
+                                <div class="accordion-header" (click)="toggleAnswer(faq)" data-toggle="collapse"
+                                    [attr.data-target]="'#faqCollapse' + i" [attr.aria-expanded]="faq.showAnswer"
+                                    aria-controls="faqCollapseOne">
+                                    <h3 class="accordion-title">
+                                        {{ faq.question }}
+                                        <i class="fas fa-chevron-down" [class.fa-rotate-180]="faq.showAnswer"></i>
+                                    </h3>
+                                </div>
+                                <div [id]="'faqCollapse' + i" class="collapse" [ngClass]="{'show': faq.showAnswer}">
+                                    <div class="accordion-body">
+                                        {{ faq.answer }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

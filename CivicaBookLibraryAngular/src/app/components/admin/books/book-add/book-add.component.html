@@ -1,0 +1,57 @@
+<div class="container">
+  <div class="row justify-content-center mt-4">
+    <div class="col-lg-8">
+      <div class="card custom-card">
+        <h5 class="card-header text-center"><b>Add Book</b></h5>
+        <div *ngIf="loading" class="text-center p-3">
+          <img src="assets/loadergif.gif" alt="loading" />
+        </div>
+        
+        <div class="card-body">
+          <form [formGroup]="bookForm" (ngSubmit)="OnSubmit()">
+            <div class="mb-3">
+              <label for="title" class="form-label"><b>Title:</b></label>
+              <input type="text" class="form-control" id="title" formControlName="title">
+              <div *ngIf="formControl['title'].invalid && formControl['title'].touched">
+                <small class="text-danger" *ngIf="formControl['title'].errors?.['required']">Title is required</small>
+                <small class="text-danger" *ngIf="formControl['title'].errors?.['minlength']">Title must be at least 2 characters</small>
+                <small class="text-danger" *ngIf="formControl['title'].errors?.['maxlength']">Title must be up to 50 characters only.</small>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="author" class="form-label"><b>Author:</b></label>
+              <input type="text" class="form-control" id="author" formControlName="author">
+              <div *ngIf="formControl['author'].invalid && formControl['author'].touched">
+                <small class="text-danger" *ngIf="formControl['author'].errors?.['required']">Author is required</small>
+                <small class="text-danger" *ngIf="formControl['author'].errors?.['minlength']">Author must be at least 2 characters</small>
+                <small class="text-danger" *ngIf="formControl['author'].errors?.['maxlength']">Author must be up to 50 characters only.</small>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="totalQuantity" class="form-label"><b>Total Quantity:</b></label>
+              <input type="number" class="form-control" id="totalQuantity" formControlName="totalQuantity">
+              <div *ngIf="formControl['totalQuantity'].invalid && formControl['totalQuantity'].touched">
+                <small class="text-danger" *ngIf="formControl['totalQuantity'].errors?.['required']">Total Quantity is required</small>
+                <small class="text-danger" *ngIf="formControl['totalQuantity'].errors?.['min']">Total Quantity must be at least 1</small>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="pricePerBook" class="form-label"><b>Price per book:</b></label>
+              <input type="number" class="form-control" id="pricePerBook" formControlName="pricePerBook">
+              <div *ngIf="formControl['pricePerBook'].invalid && formControl['pricePerBook'].touched">
+                <small class="text-danger" *ngIf="formControl['pricePerBook'].errors?.['required']">Price per book is required</small>
+                <small class="text-danger" *ngIf="formControl['pricePerBook'].errors?.['min']">Price per book must be at least $0.01</small>
+              </div>
+            </div>
+            <div class="d-grid gap-2">
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary" [disabled]="bookForm.invalid"><b>Add</b></button> &nbsp;
+                <a class="btn btn-outline-danger" [routerLink]="['/bookList']" routerLinkActive="router-link-active"><b>Cancel</b></a>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

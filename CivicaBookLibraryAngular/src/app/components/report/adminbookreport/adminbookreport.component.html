@@ -1,0 +1,165 @@
+<div class="container" style="background-color: white;">
+    <h1 class="text-center">Report</h1>
+    <div *ngIf="loading" class="loader-container">
+        <img src="assets/loadergif.gif" alt="Loading..." class="loader-image">
+    </div>
+    <div class="row">
+        <div class="col-lg-3 mt-3">
+            <div class="form-outline" style="width: 100%;">
+                <label class="form-label" for="selectedDate"><b>Select date:</b></label>
+                <input type="date" class="form-control" id="selectedDate" name="selectedDate" [(ngModel)]="selectedDate" style="border-color: #7B57CB;"
+                    (input)="selectDate()" [max]="minDate()">
+            </div>
+        </div>
+    
+        <div class="col-lg-3 mt-3">
+            <div class="form-outline" style="width: 100%;">
+                <label class="form-label" for="user"><b>User:</b></label>
+                <select id="user" name="user" class="form-control" [(ngModel)]="userId" (change)="onUserChange($event)" style="border-color: #7B57CB;"
+                    required>
+                    <option value=null disabled>----- Select user -----</option>
+                    <option *ngFor="let user of users" [value]="user.userId">{{ user.name }}</option>
+                </select>
+            </div>
+        </div>
+    
+        <div class="col-lg-3 mt-3" >
+            <div class="form-outline" style="width: 100%;">
+                <label class="form-label" for="book"><b>Books:</b></label>
+                <select id="book" name="book" class="form-control" [(ngModel)]="bookId" (change)="onBookChange($event)" style="border-color: #7B57CB;"
+                    required>
+                    <option value=null disabled>----- Select book -----</option>
+                    <option *ngFor="let book of books" [value]="book.bookId">{{ book.title }} -  {{ book.author }}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-lg-3 mt-3" *ngIf="isBookSelected">
+            <div class="form-outline" style="width: 100%;">
+                <label class="form-label" for="salutation"><b>Status:</b></label>
+                <select id="salutation" name="salutation" class="form-control" [(ngModel)]="type" style="border-color: #7B57CB;"
+                    (change)="onStatusChange($event)" required>
+                    <option value="issue">Show issued book</option>
+                    <option value="return">Show return book</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="table-responsive mt-3" *ngIf="!loading">
+        <ng-container *ngIf="bookdetails.length > 0; else userTable">
+
+            <table class="table table-striped books-table" style="font-size: smaller; text-align: center;">
+                <thead>
+                    <tr>
+                        <th>Sr. No</th>
+                        <th>Book Title</th>
+                        <th>Book Author</th>
+                        <th>Issued Date</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="bookdetails.length > 0; else noBooks">
+
+                    <tr *ngFor="let book of bookdetails;let i = index">
+                        <td>{{calculateSrNo(i)}}</td>
+                        <td>{{book.title}}</td>
+                        <td>{{book.author}}</td>
+                        <td>{{book.issueDate | date}}</td>
+                        <td>{{book.user.name}}</td>
+
+                    </tr>
+                </tbody>
+                <ng-template #noBooks>
+                    <tr *ngIf="!loading && bookdetails.length == 0" style="background: darkgrey;">
+                        <td colspan="5" class="text-center justify-content-center">No record found.</td>
+                    </tr>
+                </ng-template>
+            </table>
+            <div class="pagination-container" *ngIf="totalBooks !== 0 && bookdetails.length > 0"
+                style="display: flex;flex-direction: row-reverse;justify-content: space-between;">
+
+                <div class="pagination-buttons">
+                    <button class="btn btn-outline-dark" (click)="onPrevPage()" [disabled]="currentPage === 1">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                    <button class=" btn btn-outline-dark custom" *ngFor="let pageNumber of totalPages"
+                        (click)="onPageChange(pageNumber)" [disabled]="currentPage === pageNumber"
+                        [ngClass]="{'btn-secondary': isActive(pageNumber), 'btn-outline-dark': !isActive(pageNumber)}">
+                        {{ pageNumber }}
+                    </button>
+                    <button class="btn btn-outline-dark" (click)="onNextPage()"
+                        [disabled]="currentPage === totalPages.length">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="page-size-selection">
+                    <span>Page Size: </span>
+                    <select [(ngModel)]="pageSize" (change)="onPageSizeChange()" class="custom-select">
+                        <option value="2">2</option>
+                        <option value="4">4</option>
+                        <option value="6">6</option>
+                    </select>
+                </div>
+            </div>
+        </ng-container>
+
+        <ng-template #userTable>
+            <table class="table table-striped books-table" style="font-size: smaller; text-align: center;">
+                <thead>
+                    <tr>
+                        <th>Sr. No</th>
+                        <th>Name</th>
+                        <th>Issued Date</th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="userdetails.length > 0; else noUsers">
+                    <tr *ngFor="let user of userdetails; let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ user.user.name }}</td>
+                        <td>{{ user.issueDate| date }}</td>
+                    </tr>
+                </tbody>
+                <ng-template #noUsers>
+                    <tr *ngIf="!loading && userdetails.length == 0" style="background: darkgrey;">
+                        <td colspan="3" class="text-center justify-content-center">No record found.</td>
+                    </tr>
+                </ng-template>
+            </table>
+            <div class="pagination-container" *ngIf="totalUsers !== 0 && userdetails.length > 0"
+                style="display: flex;flex-direction: row-reverse;justify-content: space-between;">
+
+                <div class="pagination-buttons">
+                    <button class="btn btn-outline-dark" (click)="onPrevPage()" [disabled]="currentPage === 1">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+
+                    <button class=" btn btn-outline-dark" *ngFor="let pageNumber of totalPages"
+                        (click)="onPageChange(pageNumber)" [disabled]="currentPage === pageNumber"
+                        [ngClass]="{'btn-secondary': isActive(pageNumber), 'btn-outline-dark': !isActive(pageNumber)}">
+                        {{ pageNumber }}
+                    </button>
+
+                    <button class="btn btn-outline-dark" (click)="onNextPage()"
+                        [disabled]="currentPage === totalPages.length">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div class="page-size-selection">
+                    <span>Page Size: </span>
+                    <select [(ngModel)]="pageSize" (change)="onPageSizeChange()" class="custom-select">
+                        <option value="2">2</option>
+                        <option value="4">4</option>
+                        <option value="6">6</option>
+                    </select>
+                </div>
+            </div>
+        </ng-template>
+
+    </div>
+
+
+</div>

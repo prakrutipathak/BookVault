@@ -1,0 +1,37 @@
+.custom-card {
+  border: 1px solid #dee2e6;
+  background-color:#17a2b8 ;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+ 
+.accordion-header {
+  cursor: pointer;
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  padding: 12px 20px;
+  margin-bottom: 10px;
+}
+ 
+.accordion-title {
+  margin-bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+}
+ 
+.accordion-title .fas {
+  font-size: 18px;
+  transition: transform 0.3s ease;
+}
+ 
+.accordion-body {
+  padding: 10px 20px;
+  border: 1px solid #ced4da;
+  border-top: none;
+  background-color: #f8f9fa;
+  border-radius: 0 0 5px 5px;
+}

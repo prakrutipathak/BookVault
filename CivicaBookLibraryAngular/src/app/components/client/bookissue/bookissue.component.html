@@ -1,0 +1,39 @@
+<div class="container">
+    <div class="row justify-content-center mt-4">
+      <div class="col-lg-8">
+        <div class="card custom-card">
+          <h5 class="card-header text-center"><b>Issue Book</b></h5>
+          <div *ngIf="loading" class="text-center p-3">
+            <img src="assets/loadergif.gif" alt="loading" />
+          </div>
+          
+          <div class="card-body">
+            <form [formGroup]="bookIssueForm" (ngSubmit)="onSubmit()">
+                <div class="mb-3">
+                    <label for="bookId" class="form-label"><b>Book: </b></label>
+                    <select class="form-control" id="bookId" formControlName="bookId">
+                        <option value=0 disabled>-----Select Book-----</option>
+                        <option *ngFor="let book of books" [value]="book.bookId">
+                            {{ book.title }} -  {{ book.author }}
+                        </option>
+                    </select>
+                    <div *ngIf="formControl['bookId'].invalid && formControl['bookId'].touched">
+                        <small class="text-danger"
+                            *ngIf="formControl['bookId'].errors?.['required'] || formControl['bookId'].errors?.['invalidBook']">
+                            Book is required
+                        </small>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary" [disabled]="bookIssueForm.invalid">IssueBook</button> &nbsp;
+                        <a class="btn btn-outline-danger" [routerLink]="['/user-book-report']" routerLinkActive="router-link-active">Back to List</a>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>

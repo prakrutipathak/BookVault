@@ -1,0 +1,27 @@
+.home {
+    background: url('src/assets/6610.jpg') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.text.custom {
+    background-color: rgba(0, 0, 0, 0.7); 
+    padding: 30px;
+    border-radius: 10px; 
+    color: white;
+    text-align: center; 
+}
+
+.custom-link {
+    color: #fff; 
+    text-decoration: none; 
+    transition: color 0.3s ease; 
+}
+
+.custom-link:hover {
+    color: #000;
+}
