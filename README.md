@@ -1,3 +1,2 @@
-#Library Management System 
-
+# Library Management System 
 I developed a comprehensive Library Management System using .NET Core Web API in a three-layer architecture for the backend and Angular for the frontend. The system allows administrators to manage books with options to add, update, and delete records. Pagination and search functionalities are implemented for efficient book browsing. The platform supports secure user authentication using JWT tokens, with role-based access control for Admin and User roles. Admins can generate detailed reports based on user status, book availability, and dates. Users can browse, issue, and return books, with their activity tracked through user-specific reports. Additionally, the system includes features like password reset and change functionality, enhancing user experience. Angular Guards and backend policies ensure security across the system, while Bootstrap and CSS create a responsive, user-friendly interface.
